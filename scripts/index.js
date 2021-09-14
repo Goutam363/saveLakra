@@ -10,6 +10,12 @@ const modalEl=document.querySelector('#modalEl');
 const bigScoreEl=document.querySelector('#bigScoreEl');
 const pre_loader=document.getElementById('preLoader')
 const load_lightbox=document.getElementById('lightBox')
+const gameOverAudio=document.getElementById('gameOverAudio')
+const clickAudio=document.getElementById('clickAudio')
+const shootAudio=document.getElementById('shootAudio')
+const collisionAudio1=document.getElementById('collisionAudio1')
+const collisionAudio2=document.getElementById('collisionAudio2')
+// const saveLakraAudio=document.getElementById('saveLakraAudio')
 
 const projectileSpeed=8;
 const enemyMaxRadius=40;
@@ -181,6 +187,7 @@ function animate(){
         const dist=Math.hypot(player.x-enemy.x,player.y-enemy.y);
         if(dist-enemy.radius-player.radius<1){
             cancelAnimationFrame(animationId);
+            gameOverAudio.play();
             setTimeout(()=>{
                 modalEl.style.display='flex';
                 bigScoreEl.innerHTML=score;
@@ -194,6 +201,7 @@ function animate(){
                     particles.push(new Particle(projectile.x,projectile.y,Math.random()*2,enemy.color,{x:(Math.random()-0.5)*Math.random()*particleSpeed,y:(Math.random()-0.5)*Math.random()*particleSpeed}))
                 if(enemy.radius-10>10){
                     score+=smallScoreStep;
+                    collisionAudio1.play();
                     scoreEl.innerHTML=score;
                     gsap.to(enemy,{
                         radius:enemy.radius-10
@@ -204,6 +212,7 @@ function animate(){
                 }
                 else{
                     score+=bigScoreStep;
+                    collisionAudio2.play();
                     scoreEl.innerHTML=score;
                     setTimeout(()=>{
                         enemies.splice(index,1);
@@ -216,12 +225,14 @@ function animate(){
 }
 
 window.addEventListener('click',(event)=>{
+    shootAudio.play();
     const angle=Math.atan2(event.clientY-y,event.clientX-x);
     const velocity={x:Math.cos(angle)*projectileSpeed,y:Math.sin(angle)*projectileSpeed};
     projectiles.push(new Projectile(x,y,5,'white',velocity))
 })
 
 startGameBtn.addEventListener('click',()=>{
+    clickAudio.play();
     init();
     animate();
     spawnEnemies();
@@ -250,6 +261,6 @@ function afterLoad(){
                 load_lightbox.style.top="0";
                 load_lightbox.style.left="0";
             },15000);
-        },1000);
+        },0);
     },2000);
 }
